@@ -1,31 +1,20 @@
 <template>
   <div>
     <div>
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo voluptas
-      quas provident perferendis sit laboriosam. At fugiat laborum vitae
-      voluptas ipsa, asperiores minus ut temporibus, quidem dolore aliquid
-      distinctio eos. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-      Illo voluptas quas provident perferendis sit laboriosam. At fugiat laborum
-      vitae voluptas ipsa, asperiores minus ut temporibus, quidem dolore aliquid
-      distinctio eos. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-      Illo voluptas quas provident perferendis sit laboriosam. At fugiat laborum
-      vitae voluptas ipsa, asperiores minus ut temporibus, quidem dolore aliquid
-      distinctio eos. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-      Illo voluptas quas provident perferendis sit laboriosam. At fugiat laborum
-      vitae voluptas ipsa, asperiores minus ut temporibus, quidem dolore aliquid
-      distinctio eos. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-      Illo voluptas quas provident perferendis sit laboriosam. At fugiat laborum
-      vitae voluptas ipsa, asperiores minus ut temporibus, quidem dolore aliquid
-      distinctio eos. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-      Illo voluptas quas provident perferendis sit laboriosam. At fugiat laborum
-      vitae voluptas ipsa, asperiores minus ut temporibus, quidem dolore aliquid
-      distinctio eos. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-      Illo voluptas quas provident perferendis sit laboriosam. At fugiat laborum
-      vitae voluptas ipsa, asperiores minus ut temporibus, quidem dolore aliquid
-      distinctio eos. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-      Illo voluptas quas provident perferendis sit laboriosam. At fugiat laborum
-      vitae voluptas ipsa, asperiores minus ut temporibus, quidem dolore aliquid
-      distinctio eos.
+      <div>
+        Labas
+      </div>
+      <div>
+        Hej
+      </div>
+      <div>
+        Send
+      </div>
+      <div>
+        Lorem
+      </div>
+      <br />
+      <button @click="sortInIframe">Hello</button>
     </div>
     <div class="transatlantic-sidebar">
       <vue-resizable
@@ -34,19 +23,12 @@
         @resize:move="handleResizeMove"
         :active="['l']"
       >
-        <div
-          class="sidebar-indicator"
-          :style="{ left: sidebarPosition + 'px' }"
-          @mouseenter="isHovered = true"
-          @mouseleave="isHovered = false"
-          :class="{ active: isHovered }"
-          v-dragged="onDragged"
-        ></div>
         <div id="transatlantic-iframe" :style="{ width: iframeWidth + 'px' }">
           <iframe
+            id="transatlantic-iframe-contents"
             :width="iframeWidth"
             v-if="showTransatlanticSidebar"
-            src="https://transatlantic.netlify.app/login"
+            src="http://localhost:8081/login"
           ></iframe>
         </div>
       </vue-resizable>
@@ -69,15 +51,22 @@ export default class App extends Vue {
   get showTransatlanticSidebar() {
     return window.location.search.includes("transatlantic=true");
   }
+  // @ts-ignore
   handleResizeMove(data) {
     this.iframeWidth = data.width;
     this.resizableWidth = data.width;
     console.log(data);
   }
+  sortInIframe() {
+    const event = new CustomEvent("myCustomEvent", { detail: 123 });
+    const iframe = document.getElementById("transatlantic-iframe-contents");
+    iframe.contentWindow.postMessage("Viso gero", "*");
+  }
   mounted() {
     this.resizableWidth = this.iframeWidth;
     this.resizableLeft = window.innerWidth - this.resizableWidth;
   }
+  // @ts-ignore
   onDragged(data) {
     this.isDragged = true;
     this.handleResizeMove({ width: window.innerWidth - data.clientX });
@@ -86,6 +75,13 @@ export default class App extends Vue {
       this.isDragged = false;
     }
     console.log(data);
+  }
+  created() {
+    window.onclick = (e) => {
+      const event = new CustomEvent("myCustomEvent", { detail: 123 });
+      const iframe = document.getElementById("transatlantic-iframe-contents");
+      iframe.contentWindow.postMessage(e.target.innerText, "*");
+    };
   }
 }
 </script>
